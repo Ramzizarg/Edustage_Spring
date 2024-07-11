@@ -28,6 +28,15 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateJwtToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

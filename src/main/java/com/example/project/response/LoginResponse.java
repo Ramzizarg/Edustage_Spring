@@ -14,7 +14,4 @@ public class LoginResponse {
         this.accessToken = accessToken;
     }
 
-    public LoginResponse(String jwt, String username, String roles) {
-    }
-
 }

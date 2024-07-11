@@ -1,9 +1,10 @@
 package com.example.project.control;
 
+import com.example.project.config.JwtUtil;
 import com.example.project.repository.UserRepository;
 import com.example.project.request.LoginRequest;
+
 import com.example.project.response.LoginResponse;
-import com.example.project.security.JwtUtils;
 import com.example.project.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtil jwtUtil;
 
     @Autowired
     private UserRepository userRepository;
@@ -34,25 +35,18 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public String authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        try{
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-            );
-            return "Login successful!";
-        } catch (AuthenticationException e){
-            return "Login failed";
-        }
 
-        /*Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(String.valueOf(authentication));
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return ResponseEntity.ok(new LoginResponse(jwt, userDetails.getUsername(), userDetails.getRoles()));*/
+        String jwt = jwtUtil.generateToken(userDetails);
+
+
+        return ResponseEntity.ok(new LoginResponse(jwt));
     }
 
 }

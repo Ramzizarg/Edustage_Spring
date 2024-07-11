@@ -1,5 +1,5 @@
 package com.example.project.security;
-
+/*
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,7 +51,6 @@ public class JwtUtils {
         return false;
     }
 
-    public String getJwtSecret() {
-        return jwtSecret;
-    }
+    public String getJwtSecret() {return jwtSecret }
 }
+*/

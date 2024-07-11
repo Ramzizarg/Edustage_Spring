@@ -12,14 +12,16 @@ import java.util.List;
 public class UserDetailsImpl implements UserDetails {
 
     private final Long id;
+    private final String email;
     private final String role;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String password, Role role,
+    public UserDetailsImpl(Long id,String email, String username, String password, Role role,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
+        this.email = email;
         this.username = username;
         this.password = password;
         this.role= String.valueOf(role);
@@ -32,6 +34,7 @@ public class UserDetailsImpl implements UserDetails {
 
         return new UserDetailsImpl(
                 user.getId(),
+                user.getEmail(),
                 user.getUsername(),
                 user.getPassword(),
                 user.getRole(),
