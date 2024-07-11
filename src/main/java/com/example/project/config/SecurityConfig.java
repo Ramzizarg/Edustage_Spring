@@ -1,17 +1,15 @@
 package com.example.project.config;
-
 import com.example.project.service.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,9 +17,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserServiceImpl userService;
 
-    @Autowired
-    public SecurityConfig(@Lazy UserServiceImpl userService) {
+    public SecurityConfig(UserServiceImpl userService) {
         this.userService = userService;
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Override
@@ -29,12 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable() // Disable CSRF (if not needed)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/users").permitAll() // Allow anyone to create a user
+                .antMatchers("/api/auth/**").permitAll() // Allow all to access authentication API
                 .antMatchers("/teacher/**").hasRole("TEACHER")
                 .antMatchers("/student/**").hasRole("STUDENT")
                 .anyRequest().authenticated() // All other endpoints require authentication
                 .and()
-                .httpBasic(); // Use Basic Authentication
+                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Add JWT filter
     }
 
     @Override
