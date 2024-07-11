@@ -16,4 +16,20 @@ public class LoginRequest {
 
     @NotBlank
     private String password;
+
+    public @NotBlank String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank String password) {
+        this.password = password;
+    }
+
+    public @Email @NotBlank String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email @NotBlank String email) {
+        this.email = email;
+    }
 }

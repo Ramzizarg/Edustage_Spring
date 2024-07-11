@@ -31,4 +31,59 @@ public class User  {
         @OneToMany(mappedBy = "student")
         private Set<Reservation> reservations;
 
+        public Set<Reservation> getReservations() {
+                return reservations;
+        }
+
+        public void setReservations(Set<Reservation> reservations) {
+                this.reservations = reservations;
+        }
+
+        public Set<Course> getCourses() {
+                return courses;
+        }
+
+        public void setCourses(Set<Course> courses) {
+                this.courses = courses;
+        }
+
+        public String getEmail() {
+                return email;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
+        }
+
+        public Role getRole() {
+                return role;
+        }
+
+        public void setRole(Role role) {
+                this.role = role;
+        }
+
+        public String getPassword() {
+                return password;
+        }
+
+        public void setPassword(String password) {
+                this.password = password;
+        }
+
+        public String getUsername() {
+                return username;
+        }
+
+        public void setUsername(String username) {
+                this.username = username;
+        }
+
+        public Long getId() {
+                return id;
+        }
+
+        public void setId(Long id) {
+                this.id = id;
+        }
 }
