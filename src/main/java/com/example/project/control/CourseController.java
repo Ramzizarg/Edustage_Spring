@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/teacher/courses")
 public class CourseController {
 
+    private final CourseService courseService;
+
     @Autowired
-    private CourseService courseService;
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
 
     @GetMapping
     public List<Course> getAllCourses() {
@@ -25,7 +29,7 @@ public class CourseController {
     public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
         Optional<Course> course = courseService.getCourseById(id);
         return course.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -35,15 +39,15 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(@PathVariable Long id, @RequestBody Course courseDetails) {
-        Optional<Course> updatedCourse = courseService.updateCourse(id, courseDetails);
-        return updatedCourse.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Course> updateCourse(@PathVariable Long id, @RequestBody Course updatedCourse) {
+        Optional<Course> course = courseService.updateCourse(id, updatedCourse);
+        return course.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        boolean isDeleted = courseService.deleteCourse(id);
-        return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        courseService.deleteCourse(id);
+        return ResponseEntity.noContent().build();
     }
 }

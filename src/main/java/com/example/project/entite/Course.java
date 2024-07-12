@@ -15,8 +15,6 @@ public class Course {
     private Long id;
     private String title;
     private String description;
-    private String teacherName;
-
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
