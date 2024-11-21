@@ -21,11 +21,30 @@ public class Reservation {
     private Status status;
 
     @ManyToOne
+    @JoinColumn(name = "student_id")
     private User student;
 
     @ManyToOne
+    @JoinColumn(name = "teacher_id")
     private User teacher;
 
     @ManyToOne
+    @JoinColumn(name = "course_id")
     private Course course;
+
+
+    public Reservation() {
+    }
+
+    public Reservation(LocalDateTime startTime, LocalDateTime endTime, String meetLink, Status status, User student, User teacher, Course course) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.meetLink = meetLink;
+        this.status = status;
+        this.student = student;
+        this.teacher = teacher;
+        this.course = course;
+    }
+
+
 }

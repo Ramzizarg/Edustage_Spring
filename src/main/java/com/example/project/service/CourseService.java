@@ -22,22 +22,22 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Optional<Course> getCourseById(Long id) {
-        return courseRepository.findById(id);
+    public Course getCourseById(Long id) {
+        Optional<Course> courseOptional = courseRepository.findById(id);
+        return courseOptional.orElse(null);
     }
 
-    public Course saveCourse(Course course) {
+    public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
 
-    public Optional<Course> updateCourse(Long id, Course updatedCourse) {
-        return courseRepository.findById(id).map(course -> {
-            course.setTitle(updatedCourse.getTitle());
-            course.setDescription(updatedCourse.getDescription());
-            course.setStartTime(updatedCourse.getStartTime());
-            course.setEndTime(updatedCourse.getEndTime());
-            return courseRepository.save(course);
-        });
+    public Course updateCourse(Long id, Course updatedCourse) {
+        Optional<Course> existingCourseOptional = courseRepository.findById(id);
+        if (existingCourseOptional.isEmpty()) {
+            throw new RuntimeException("Course not found with id: " + id);
+        }
+        updatedCourse.setId(id); // Ensure the updatedCourse has the correct ID
+        return courseRepository.save(updatedCourse);
     }
 
     public void deleteCourse(Long id) {

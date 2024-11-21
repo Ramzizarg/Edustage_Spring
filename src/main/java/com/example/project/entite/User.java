@@ -3,15 +3,14 @@ package com.example.project.entite;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-public class User  {
+public class User {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +24,10 @@ public class User  {
 
         private String email;
 
-        @OneToMany(mappedBy = "teacher")
-        private Set<Course> courses;
+        @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<Course> courses;
 
-        @OneToMany(mappedBy = "student")
+        @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private Set<Reservation> reservations;
 
         public Set<Reservation> getReservations() {
@@ -39,14 +38,15 @@ public class User  {
                 this.reservations = reservations;
         }
 
-        public Set<Course> getCourses() {
+        public List<Course> getCourses() {
                 return courses;
         }
 
-        public void setCourses(Set<Course> courses) {
+        public void setCourses(List<Course> courses) {
                 this.courses = courses;
         }
 
+        // Getters and Setters for other fields
         public String getEmail() {
                 return email;
         }

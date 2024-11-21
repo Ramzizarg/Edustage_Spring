@@ -1,48 +1,64 @@
 package com.example.project.control;
 
 import com.example.project.entite.Course;
+import com.example.project.entite.User;
 import com.example.project.service.CourseService;
+import com.example.project.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/teacher/courses")
 public class CourseController {
 
     private final CourseService courseService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, UserServiceImpl userService) {
         this.courseService = courseService;
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = courseService.getAllCourses();
+        return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
-        Optional<Course> course = courseService.getCourseById(id);
-        return course.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Course course = courseService.getCourseById(id);
+        if (course != null) {
+            return ResponseEntity.ok(course);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
-        Course createdCourse = courseService.saveCourse(course);
-        return ResponseEntity.ok(createdCourse);
+    @PostMapping("/{userId}")
+    public ResponseEntity<Course> createCourse(@PathVariable Long userId, @RequestBody Course course) {
+        User teacher = userService.getUserById(userId);
+        if (teacher == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        course.setTeacher(teacher);
+        Course createdCourse = courseService.createCourse(course);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCourse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable Long id, @RequestBody Course updatedCourse) {
-        Optional<Course> course = courseService.updateCourse(id, updatedCourse);
-        return course.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Course updated = courseService.updateCourse(id, updatedCourse);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

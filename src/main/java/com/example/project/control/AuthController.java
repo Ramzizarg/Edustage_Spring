@@ -43,6 +43,6 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new LoginResponse(jwt, userDetails.getRole()));
+        return ResponseEntity.ok(new LoginResponse(jwt, userDetails.getId(), userDetails.getRole()));
     }
 }

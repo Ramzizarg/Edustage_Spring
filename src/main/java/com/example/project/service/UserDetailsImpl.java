@@ -7,30 +7,31 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final Long id;
+    private final Long id; // Add id field
     private final String email;
-    private final String role;
     private final String username;
     private final String password;
+    private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id,String email, String username, String password, Role role,
+    public UserDetailsImpl(Long id, String email, String username, String password, Role role,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.role= String.valueOf(role);
+        this.role = role != null ? "ROLE_" + role.name() : null;
         this.authorities = authorities;
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRole() != null ?
-                List.of(new SimpleGrantedAuthority(user.getRole().name())) : List.of();
+        GrantedAuthority authority = user.getRole() != null ?
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name()) :
+                new SimpleGrantedAuthority("ROLE_USER"); // Default role if none provided
 
         return new UserDetailsImpl(
                 user.getId(),
@@ -38,7 +39,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getUsername(),
                 user.getPassword(),
                 user.getRole(),
-                authorities
+                Collections.singletonList(authority)
         );
     }
 
@@ -46,9 +47,14 @@ public class UserDetailsImpl implements UserDetails {
         return id;
     }
 
-    public String getRole() {
-        return this.role;
+    public String getEmail() {
+        return email;
     }
+
+    public String getRole() {
+        return role;
+    }
+
     @Override
     public String getUsername() {
         return username;
@@ -83,6 +89,4 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true; // Account activation logic can be implemented here
     }
-
-    public String getRoles() { return role;}
 }

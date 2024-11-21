@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserDetailsService {
         return UserDetailsImpl.build(user);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public User getUserByEmail(String userEmail) {
+        return userRepository.findByEmail(userEmail);
     }
 
     public User getUserById(Long id) {
@@ -66,5 +66,9 @@ public class UserServiceImpl implements UserDetailsService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

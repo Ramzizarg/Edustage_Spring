@@ -10,10 +10,13 @@ public class LoginResponse {
     private String accessToken;
     private String tokenType = "Bearer";
     private String role;
+    private Long userId; // Add userId field
 
 
-    public LoginResponse(String accessToken, String role) {
+
+    public LoginResponse(String accessToken, Long userId, String role) {
         this.accessToken = accessToken;
+        this.userId = userId;
         this.role = role;
     }
 

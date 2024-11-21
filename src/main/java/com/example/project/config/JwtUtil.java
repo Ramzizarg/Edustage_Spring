@@ -20,55 +20,48 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private long jwtExpirationInMs;
+    private long expirationMs;
 
-    public String generateToken(UserDetailsImpl userDetails) {
+    // Generate JWT token
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getRole()); // Include role in claims
+        claims.put("sub", userDetails.getUsername()); // 'sub' is a standard claim for subject
+        claims.put("iat", new Date());
+        claims.put("exp", new Date(System.currentTimeMillis() + expirationMs));
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .addClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
 
-
-    public String generateJwtToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
+    // Extract username from JWT token
+    public String extractUsername(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    // Validate JWT token
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    // Check if JWT token is expired
+    private boolean isTokenExpired(String token) {
+        Date expiration = extractExpiration(token);
+        return expiration.before(new Date());
     }
 
+    // Extract expiration date from JWT token
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
     }
 }
-
