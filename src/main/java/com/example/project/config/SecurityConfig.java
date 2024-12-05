@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
                 })
+
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 });
